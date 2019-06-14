@@ -9,10 +9,10 @@ class KnightPathFinder
 
   def self.valid_moves(pos)
     movements = [[2,1], [2,-1], [-2,1], [-2,-1], [1,2], [-1,2], [1,-2], [-1,-2]]
-    possible_moves = movements.map do |moves| 
+    movements.map! do |moves| 
       [moves[0] + pos[0], moves[1]+pos[1]]
     end
-    possible_moves.reject {|positions| positions[0] < 0 || positions[0] > 7 || positions[1] < 0 || positions[1] >7}
+    movements.reject {|positions| positions[0] < 0 || positions[0] > 7 || positions[1] < 0 || positions[1] >7}
   end
 
   def new_move_positions(pos)
@@ -30,7 +30,7 @@ class KnightPathFinder
   def build_move_tree
     root = PolyTreeNode.new(@root_node)
     queue = [root]
-    until @considered.length == 64
+    until queue.empty?
       parent_node = queue.shift
       moves = new_move_positions(parent_node.value)
       moves.each do |move|
