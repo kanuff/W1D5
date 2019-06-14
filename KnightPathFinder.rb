@@ -27,19 +27,39 @@ class KnightPathFinder
     valid_moves
   end
 
-  def build_move_tree(pos=@root_node)
-    parent_node = PolyTreeNode.new(pos)
-
-    moves = new_move_positions(pos)
-    moves.each do |move|
-      move = PolyTreeNode.new(move)
-      move.parent = parent_node
+  def build_move_tree
+    root = PolyTreeNode.new(@root_node)
+    queue = [root]
+    until @considered.length == 64
+      parent_node = queue.shift
+      moves = new_move_positions(parent_node.value)
+      moves.each do |move|
+        move = PolyTreeNode.new(move)
+        move.parent = parent_node
+        queue << move
+      end
     end
-    parent_node
+    @considered = [@root_node]
+    root
   end
 
   def find_path(end_pos)
-    
+    trace_path_back(self.build_move_tree.bfs(end_pos))
+
   end
 
+  def trace_path_back(end_node)
+    path = []
+    node = end_node
+    until node.parent == nil
+      path << node.value
+      node = node.parent
+    end
+    path << @root_node
+    path.reverse
+  end
 end
+
+kpf = KnightPathFinder.new([0, 0])
+p kpf.find_path([6, 2]) # => [[0, 0], [1, 2], [2, 0], [4, 1], [6, 2]]
+p kpf.find_path([7, 6]) # => [[0, 0], [1, 2], [2, 4], [3, 6], [5, 5], [7, 6]]
